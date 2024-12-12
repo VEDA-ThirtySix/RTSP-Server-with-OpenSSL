@@ -38,6 +38,10 @@ H264Parser::~H264Parser()
 
 bool H264Parser::is_start_code(const uint8_t *_buffer, const int64_t buffer_len, const uint8_t start_code_type)
 {
+	if (!_buffer || buffer_len <= 0) {
+		std::cerr << "Error: Invalid buffer or buffer length." << std::endl;
+	    return false;
+	}
     switch (start_code_type){
     case 3:
         if (buffer_len < 3)

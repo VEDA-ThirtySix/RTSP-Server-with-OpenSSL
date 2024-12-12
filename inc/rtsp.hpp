@@ -14,6 +14,8 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <openssl/ssl.h>
+#include <srtp2/srtp.h>
 
 constexpr uint16_t SERVER_RTP_PORT = 12345;
 constexpr uint16_t SERVER_RTCP_PORT = SERVER_RTP_PORT + 1;
@@ -31,6 +33,11 @@ private:
     int client_rtp_port{-1};
     int client_rtcp_port{-1};
 
+	static SSL_CTX* create_dtls_server_context(); // DTLS 서버 컨텍스트 생성 함수 추가
+	void configure_context(SSL_CTX* ctx);  // SSL 컨텍스트 설정 함수 추가
+	static void debug_callback(const SSL *ssl, int where, int ret);
+	srtp_t srtp_session;  // SRTP 세션 변수 추가
+
     static int Socket(int domain, int type, int protocol = 0);
     static bool Bind(int sockfd, const char *IP, uint16_t port);
     static bool rtsp_sock_init(int rtspSockfd, const char *IP, uint16_t port, int64_t ListenQueue = 5);
@@ -45,7 +52,7 @@ private:
 
     void serve_client(int clientfd, const sockaddr_in &cliAddr, int rtpFD, int ssrcNum, const char *sessionID, int timeout, float fps);
 
-    static int64_t push_stream(int sockfd, RtpPacket &rtpPack, const uint8_t *data, int64_t dataSize, const sockaddr *to, uint32_t timeStampStep);
+    static int64_t push_stream(int sockfd, RtpPacket &rtpPack, const uint8_t *data, int64_t dataSize, const sockaddr *to, uint32_t timeStampStep, srtp_t srtp_session);
 
 public:
     explicit RTSP(const char *filename);

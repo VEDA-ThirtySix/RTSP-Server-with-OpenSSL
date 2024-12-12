@@ -21,10 +21,11 @@ constexpr int64_t RTP_VERSION = 2;
 constexpr int64_t RTP_PAYLOAD_TYPE_H264 = 96;
 constexpr int64_t FU_SIZE = 2;
 
-constexpr int64_t MAX_UDP_PACKET_SIZE = 65535;
+constexpr int64_t MAX_UDP_PACKET_SIZE = 60000;
+//constexpr int64_t MAX_UDP_PACKET_SIZE = 2048;
 constexpr int64_t MAX_RTP_DATA_SIZE = MAX_UDP_PACKET_SIZE - IP_V4_HEADER_SIZE
-                                        - UDP_HEADER_SIZE - RTP_HEADER_SIZE - FU_SIZE;
-constexpr int64_t MAX_RTP_PACKET_LEN = MAX_RTP_DATA_SIZE + RTP_HEADER_SIZE + FU_SIZE;
+                                        - UDP_HEADER_SIZE - RTP_HEADER_SIZE - FU_SIZE - 10;
+constexpr int64_t MAX_RTP_PACKET_LEN = MAX_RTP_DATA_SIZE + RTP_HEADER_SIZE + FU_SIZE + 10;
 
 #pragma pack(1)
 class RtpHeader
@@ -47,6 +48,7 @@ public:
     void *get_header() const;
     uint32_t get_timestamp() const;
     uint32_t get_seq() const;
+	uint32_t get_ssrc() const;
 private:
     //byte 0
     uint8_t csrcCount : 4;
@@ -70,5 +72,5 @@ inline void RtpHeader::set_seq(const uint32_t _seq) { this->seq = htons(_seq); }
 inline void *RtpHeader::get_header() const { return (void *)this; }
 inline uint32_t RtpHeader::get_timestamp() const { return ntohl(this->timestamp); }
 inline uint32_t RtpHeader::get_seq() const { return ntohs(this->seq); }
-
+inline uint32_t RtpHeader::get_ssrc() const { return ntohl(this->ssrc); }
 #pragma pack()

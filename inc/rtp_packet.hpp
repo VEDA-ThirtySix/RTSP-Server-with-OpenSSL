@@ -31,5 +31,10 @@ public:
     uint8_t *get_payload() { return this->RTP_Payload; }
     uint32_t get_header_seq();
     uint32_t get_header_timestamp();
+	int64_t get_packet_length() const {
+		return RTP_HEADER_SIZE + FU_SIZE + MAX_RTP_DATA_SIZE;
+	}
+	const RtpHeader& get_header() const { return this->header; }
+    RtpHeader& mutable_header() { return this->header; }
 };
 #pragma pack()
